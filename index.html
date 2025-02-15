@@ -43,8 +43,21 @@
       }
     }
 
+    function PromptCreator() {
+      return {
+        prompts: [{ label: 'Prompt 1', text: '' }],
+        addPrompt() {
+          this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '' });
+        },
+        removePrompt(index) {
+          this.prompts.splice(index, 1);
+        }
+      }
+    }
+
     createApp({
-      Counter
+      Counter,
+      PromptCreator
     }).mount()
   </script>
 
@@ -54,8 +67,26 @@
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="container">
+  <div class="container" style="margin-top: 5%">
     <div class="row">
+      <div v-scope="PromptCreator()">
+        <form>
+          <div class="row" v-for="(prompt, index) in prompts" :key="index">
+            <div class="columns eight">
+              <label :for="'prompt' + index">{{ prompt.label }}</label>
+              <input class="u-full-width" type="text" :id="'prompt' + index" v-model="prompt.text"
+                placeholder="Enter prompt">
+            </div>
+            <div class="columns four">
+              <button type="button" @click="removePrompt(index)">Remove</button>
+            </div>
+          </div>
+          <button type="button" @click="addPrompt">Add Prompt</button>
+          <input class="button-primary" type="submit" value="Submit">
+        </form>
+      </div>
+
+
       <div class="columns" style="margin-top: 25%">
         <div v-scope="Counter({ initialCount: 1 })" @vue:mounted="mounted">
           <p>{{ count }}</p>
@@ -66,31 +97,7 @@
           <p>{{ count }}</p>
           <button @click="inc">increment</button>
         </div>
-        <h4>Basic Page</h4>
-        <p>This index.html page is a placeholder with the CSS, font and favicon. It's just waiting for you to add some
-          content! If you need some help hit up the <a href="http://www.getskeleton.com">Skeleton documentation</a>.</p>
       </div>
-
-      <form>
-        <div class="row">
-          <div class="columns eight">
-            <input class="u-full-width" type="text" placeholder="prompt" id="m1">
-          </div>
-          <div class="columns four">
-            <p contenteditable="true">prompt</p>
-          </div>
-          <div class="columns">
-            <label for="exampleEmailInput">Your email</label>
-            <input class="u-full-width" type="text" placeholder="prompt" id="m1">
-            <label for="exampleEmailInput">Your email</label>
-            <input class="u-full-width" type="text" placeholder="prompt" id="m1">
-          </div>
-        </div>
-        <input class="button-primary" type="submit" value="Submit">
-      </form>
-
-      <a class="button button-primary">Download</a>
-      <button class="button button-primary">Download</button>
     </div>
   </div>
 
