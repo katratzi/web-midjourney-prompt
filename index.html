@@ -22,6 +22,11 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
+  <style>
+    .prompt {
+      transition: transform 0.3s ease-in-out;
+    }
+  </style>
 
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -65,6 +70,9 @@
             this.prompts[index] = this.prompts[index + 1];
             this.prompts[index + 1] = temp;
           }
+        },
+        get concatenatedPrompts() {
+          return this.prompts.map(prompt => prompt.text).join(' ');
         }
       }
     }
@@ -84,8 +92,13 @@
   <div class="container" style="margin-top: 5%">
     <div class="row">
       <div v-scope="PromptCreator()">
+        <div class="row">
+          <div class="columns twelve">
+            <p>{{ concatenatedPrompts }}</p>
+          </div>
+        </div>
         <form>
-          <div class="row" v-for="(prompt, index) in prompts" :key="index">
+          <div class="row prompt" v-for="(prompt, index) in prompts" :key="index">
             <div class="columns eight">
               <label :for="'prompt' + index">{{ prompt.label }}</label>
               <input class="u-full-width" type="text" :id="'prompt' + index" v-model="prompt.text"
