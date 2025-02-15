@@ -51,6 +51,20 @@
         },
         removePrompt(index) {
           this.prompts.splice(index, 1);
+        },
+        movePromptUp(index) {
+          if (index > 0) {
+            const temp = this.prompts[index];
+            this.prompts[index] = this.prompts[index - 1];
+            this.prompts[index - 1] = temp;
+          }
+        },
+        movePromptDown(index) {
+          if (index < this.prompts.length - 1) {
+            const temp = this.prompts[index];
+            this.prompts[index] = this.prompts[index + 1];
+            this.prompts[index + 1] = temp;
+          }
         }
       }
     }
@@ -79,6 +93,8 @@
             </div>
             <div class="columns four">
               <button type="button" @click="removePrompt(index)">Remove</button>
+              <button type="button" @click="movePromptUp(index)">Up</button>
+              <button type="button" @click="movePromptDown(index)">Down</button>
             </div>
           </div>
           <button type="button" @click="addPrompt">Add Prompt</button>
