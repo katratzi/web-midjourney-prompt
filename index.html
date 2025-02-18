@@ -6,7 +6,7 @@
   <!-- Basic Page Needs
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
-  <title>Your page title here :)</title>
+  <title>Midjourney Prompt Tool</title>
   <meta name="description" content="">
   <meta name="author" content="">
 
@@ -22,6 +22,7 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/custom.css">
   <style>
     .prompt {
       transition: transform 0.3s ease-in-out;
@@ -31,7 +32,6 @@
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="icon" type="image/png" href="images/favicon.png">
-
   <!-- <script src="https://unpkg.com/petite-vue" defer init></script> -->
   <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
@@ -50,9 +50,9 @@
 
     function PromptCreator() {
       return {
-        prompts: [{ label: 'Prompt 1', text: '' }],
+        prompts: [{ label: 'Prompt 1', text: '', visible: true }],
         addPrompt() {
-          this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '' });
+          this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '', visible: true });
         },
         removePrompt(index) {
           this.prompts.splice(index, 1);
@@ -71,8 +71,16 @@
             this.prompts[index + 1] = temp;
           }
         },
+        toggleVisible(index) {
+          this.prompts[index].visible = !this.prompts[index].visible;
+        },
         get concatenatedPrompts() {
-          return this.prompts.map(prompt => prompt.text).join(' ');
+          return this.prompts.filter(prompt => prompt.visible).map(prompt => prompt.text).join(' ');
+        },
+        copyToClipboard() {
+          navigator.clipboard.writeText(this.concatenatedPrompts).then(() => {
+            alert('Copied to clipboard!');
+          });
         }
       }
     }
@@ -82,7 +90,6 @@
       PromptCreator
     }).mount()
   </script>
-
 </head>
 
 <body>
@@ -90,44 +97,72 @@
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="container" style="margin-top: 5%">
-    <div class="row">
-      <div v-scope="PromptCreator()">
-        <div class="row">
-          <div class="columns twelve">
-            <p>{{ concatenatedPrompts }}</p>
-          </div>
+
+
+    <div v-scope="PromptCreator()">
+      <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
+
+        <div class="columns twelve">
+          <p>{{ concatenatedPrompts }}</p>
+          <button class="button-primary" @click="copyToClipboard">Copy to Clipboard</button>
         </div>
-        <form>
-          <div class="row prompt" v-for="(prompt, index) in prompts" :key="index">
-            <div class="columns eight">
-              <label :for="'prompt' + index">{{ prompt.label }}</label>
-              <input class="u-full-width" type="text" :id="'prompt' + index" v-model="prompt.text"
-                placeholder="Enter prompt">
-            </div>
-            <div class="columns four">
-              <button type="button" @click="removePrompt(index)">Remove</button>
-              <button type="button" @click="movePromptUp(index)">Up</button>
-              <button type="button" @click="movePromptDown(index)">Down</button>
-            </div>
-          </div>
-          <button type="button" @click="addPrompt">Add Prompt</button>
-          <input class="button-primary" type="submit" value="Submit">
-        </form>
+
+
       </div>
 
+      <div class="row">
+        <hr />
+      </div>
 
-      <div class="columns" style="margin-top: 25%">
-        <div v-scope="Counter({ initialCount: 1 })" @vue:mounted="mounted">
-          <p>{{ count }}</p>
-          <button @click="inc">increment</button>
+      <!-- <form> -->
+      <div class="row prompt" v-for="(prompt, index) in prompts" :key="index">
+        <div class="columns two">
+          <input class="u-full-width input-no-border" type="text" :id="'label' + index" v-model="prompt.label"
+            placeholder="Label">
         </div>
+        <div class="columns seven">
+          <input class="u-full-width" type="text" :id="'prompt' + index" v-model="prompt.text"
+            placeholder="Enter prompt">
+        </div>
+        <div class="columns three">
+          <button type="button" class="narrow" @click="toggleVisible(index)">
+            {{ prompt.visible ? 'O' : 'Ø' }}
+          </button>
+          <button type="button" class="narrow" @click="movePromptUp(index)">&#x25B2; </button>
+          <button type="button" class="narrow" @click="movePromptDown(index)">&#x25BC;</button>
+          <button type="button" class="narrow button-secondary" @click="removePrompt(index)">
+            Del
+            <!-- <i class="fa-solid fa-trash-can"></i>
+            <i class="fa-solid fa-delete-left"></i> -->
+          </button>
 
-        <div v-scope="Counter({ initialCount: 2 })">
-          <p>{{ count }}</p>
-          <button @click="inc">increment</button>
         </div>
+      </div>
+
+      <!-- </form> -->
+
+
+      <div class="row">
+        <hr />
+      </div>
+      <div class="row">
+        <button type="button" @click="addPrompt">Add Prompt</button>
+        <input class="button-primary" type="submit" value="Submit">
       </div>
     </div>
+
+    <div class="columns" style="margin-top: 25%">
+      <div v-scope="Counter({ initialCount: 1 })" @vue:mounted="mounted">
+        <p>{{ count }}</p>
+        <button @click="inc">increment</button>
+      </div>
+
+      <div v-scope="Counter({ initialCount: 2 })">
+        <p>{{ count }}</p>
+        <button @click="inc">increment</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- End Document
