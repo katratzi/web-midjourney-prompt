@@ -36,18 +36,6 @@
   <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
 
-    function Counter(props) {
-      return {
-        count: props.initialCount,
-        inc() {
-          this.count++
-        },
-        mounted() {
-          console.log(`I'm mounted!`)
-        }
-      }
-    }
-
     function PromptCreator() {
       return {
         prompts: [{ label: 'Prompt 1', text: '', visible: true }],
@@ -103,14 +91,13 @@
 
 <body>
 
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!-- Primary Page Layout -->
   <div class="container" style="margin-top: 5%">
 
-
+    <!-- Petite Vue -->
     <div v-scope="PromptCreator()">
       <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
-
+        <h4>Midjourney Prompt</h4>
         <div class="columns twelve">
           <p>{{ concatenatedPrompts }}</p>
           <button class="button-primary" @click="copyToClipboard">Copy to Clipboard</button>
@@ -123,7 +110,7 @@
         <hr />
       </div>
 
-      <!-- <form> -->
+      <!-- The prompts -->
       <div class="row prompt" v-for="(prompt, index) in prompts" :key="index">
         <div class="columns two">
           <input class="u-full-width input-no-border" type="text" :id="'label' + index" v-model="prompt.label"
@@ -133,6 +120,7 @@
           <input class="u-full-width" type="text" :id="'prompt' + index" v-model="prompt.text"
             placeholder="Enter prompt">
         </div>
+        <!-- prompt controls -->
         <div class="columns three">
           <button type="button" class="narrow" @click="toggleVisible(index)">
             {{ prompt.visible ? 'O' : 'Ø' }}
@@ -141,30 +129,23 @@
           <button type="button" class="narrow" @click="movePromptDown(index)">&#x25BC;</button>
           <button type="button" class="narrow button-secondary" @click="removePrompt(index)">
             Del
-            <!-- <i class="fa-solid fa-trash-can"></i>
-            <i class="fa-solid fa-delete-left"></i> -->
           </button>
 
         </div>
       </div>
 
-      <!-- </form> -->
-
-
       <div class="row">
         <hr />
       </div>
+
+      <!-- Add and store -->
       <div class="row">
         <button type="button" @click="addPrompt">Add Prompt</button>
-        <input class="button-primary" type="submit" value="Submit" @click="submitPrompts">
+        <input class="button-primary" type="submit" value="Store" @click="submitPrompts">
       </div>
 
       <div class="row">
-        <hr />
-      </div>
-
-      <div class="row">
-        <h3>Completed Prompts</h3>
+        <h4>Completed Prompts</h4>
         <ul>
           <li v-for="(completedPrompt, index) in completedPrompts" :key="index" v-html="completedPrompt"></li>
         </ul>
@@ -173,23 +154,8 @@
     </div>
 
 
-
-    <div class="columns" style="margin-top: 25%">
-      <div v-scope="Counter({ initialCount: 1 })" @vue:mounted="mounted">
-        <p>{{ count }}</p>
-        <button @click="inc">increment</button>
-      </div>
-
-      <div v-scope="Counter({ initialCount: 2 })">
-        <p>{{ count }}</p>
-        <button @click="inc">increment</button>
-      </div>
-    </div>
-
   </div>
 
-  <!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 </body>
 
 </html>
