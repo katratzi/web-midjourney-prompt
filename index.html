@@ -51,6 +51,7 @@
     function PromptCreator() {
       return {
         prompts: [{ label: 'Prompt 1', text: '', visible: true }],
+        completedPrompts: [],
         addPrompt() {
           this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '', visible: true });
         },
@@ -81,6 +82,10 @@
           navigator.clipboard.writeText(this.concatenatedPrompts).then(() => {
             alert('Copied to clipboard!');
           });
+        },
+        submitPrompts() {
+          const completedPrompt = this.prompts.map(prompt => `${prompt.label}: ${prompt.text}`).join(' ');
+          this.completedPrompts.push(completedPrompt);
         }
       }
     }
@@ -147,9 +152,19 @@
       </div>
       <div class="row">
         <button type="button" @click="addPrompt">Add Prompt</button>
-        <input class="button-primary" type="submit" value="Submit">
+        <input class="button-primary" type="submit" value="Submit" @click="submitPrompts">
       </div>
+
+      <div class="row">
+        <h3>Completed Prompts</h3>
+        <ul>
+          <li v-for="(completedPrompt, index) in completedPrompts" :key="index">{{ completedPrompt }}</li>
+        </ul>
+      </div>
+
     </div>
+
+
 
     <div class="columns" style="margin-top: 25%">
       <div v-scope="Counter({ initialCount: 1 })" @vue:mounted="mounted">
