@@ -84,7 +84,11 @@
           });
         },
         submitPrompts() {
-          const completedPrompt = this.prompts.map(prompt => `${prompt.label}: ${prompt.text}`).join(' ');
+          const completedPrompt = this.prompts.map(prompt => {
+            const label = `<i>${prompt.label}</i>`;
+            const text = prompt.visible ? prompt.text : `<span style="color: red;">${prompt.text}</span>`;
+            return `${label}: ${text}`;
+          }).join(' ');
           this.completedPrompts.push(completedPrompt);
         }
       }
@@ -156,9 +160,13 @@
       </div>
 
       <div class="row">
+        <hr />
+      </div>
+
+      <div class="row">
         <h3>Completed Prompts</h3>
         <ul>
-          <li v-for="(completedPrompt, index) in completedPrompts" :key="index">{{ completedPrompt }}</li>
+          <li v-for="(completedPrompt, index) in completedPrompts" :key="index" v-html="completedPrompt"></li>
         </ul>
       </div>
 
