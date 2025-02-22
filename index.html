@@ -94,19 +94,41 @@
 
 
         // save and load to local storage
+        // Updated storage functions
         savePromptsToLocal() {
-          localStorage.setItem('prompts', JSON.stringify(this.subPrompts));
-          alert('Prompts saved to local storage!');
+          const dataToSave = {
+            subPrompts: this.subPrompts,
+            completedPrompts: this.completedPrompts
+          };
+          localStorage.setItem('promptData', JSON.stringify(dataToSave));
+          this.showToast = true;
+          this.toastMessage = 'All prompts saved to local storage';
+          setTimeout(() => {
+            this.showToast = false;
+          }, 2000);
         },
+
         deletePromptsFromLocal() {
-          localStorage.removeItem('prompts');
+          localStorage.removeItem('promptData');
           this.subPrompts = [{ label: 'Prompt 1', text: '', visible: true }];
-          alert('Prompts deleted from local storage!');
+          this.completedPrompts = [];
+          this.showToast = true;
+          this.toastMessage = 'All prompts deleted from local storage';
+          setTimeout(() => {
+            this.showToast = false;
+          }, 2000);
         },
+
         loadPromptsFromLocal() {
-          const savedPrompts = localStorage.getItem('prompts');
-          if (savedPrompts) {
-            this.subPrompts = JSON.parse(savedPrompts);
+          const savedData = localStorage.getItem('promptData');
+          if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            if (parsedData.subPrompts) {
+              this.subPrompts = parsedData.subPrompts;
+            }
+            if (parsedData.completedPrompts) {
+              this.completedPrompts = parsedData.completedPrompts;
+            }
           }
         },
 
