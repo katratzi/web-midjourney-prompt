@@ -37,10 +37,14 @@
         subPrompts: [{ label: 'Prompt 1', text: '', visible: true }],
         completedPrompts: [],
         showToast: false,
+        hasMounted: false,
         toastMessage: 'Hello World!',
 
         // main prompt functions
         get concatenatedPrompts() {
+          if (this.hasMounted) {
+            this.savePromptsToLocal();
+          }
           return this.subPrompts.filter(prompt => prompt.visible).map(prompt => prompt.text).join(' ');
         },
         copyToClipboard() {
@@ -59,7 +63,7 @@
             timestamp: new Date().toISOString()
           };
           this.completedPrompts.push(promptData);
-
+          this.savePromptsToLocal()
           this.showToast = true;
           this.toastMessage = 'Saved';
           setTimeout(() => {
@@ -96,16 +100,17 @@
         // save and load to local storage
         // Updated storage functions
         savePromptsToLocal() {
+
           const dataToSave = {
             subPrompts: this.subPrompts,
             completedPrompts: this.completedPrompts
           };
           localStorage.setItem('promptData', JSON.stringify(dataToSave));
-          this.showToast = true;
-          this.toastMessage = 'All prompts saved to local storage';
-          setTimeout(() => {
-            this.showToast = false;
-          }, 2000);
+          // this.showToast = true;
+          // this.toastMessage = 'All prompts saved to local storage';
+          // setTimeout(() => {
+          //   this.showToast = false;
+          // }, 2000);
         },
 
         deletePromptsFromLocal() {
@@ -113,7 +118,7 @@
           this.subPrompts = [{ label: 'Prompt 1', text: '', visible: true }];
           this.completedPrompts = [];
           this.showToast = true;
-          this.toastMessage = 'All prompts deleted from local storage';
+          this.toastMessage = 'Reset! - All prompts deleted from local storage';
           setTimeout(() => {
             this.showToast = false;
           }, 2000);
@@ -159,10 +164,56 @@
           }).join(' ');
         },
 
+        // export and import
+        exportAll() {
+          const data = {
+            subPrompts: this.subPrompts,
+            completedPrompts: this.completedPrompts
+          };
+          const jsonString = JSON.stringify(data, null, 2);
+          const blob = new Blob([jsonString], { type: 'application/json' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'prompts.json';
+          a.click();
+          URL.revokeObjectURL(a.href);
+        },
+
+        importAll() {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'application/json';
+          input.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const importedData = JSON.parse(e.target.result);
+                if (importedData.subPrompts && importedData.completedPrompts) {
+                  this.subPrompts = importedData.subPrompts;
+                  this.completedPrompts = importedData.completedPrompts;
+                  this.showToast = true;
+                  this.toastMessage = 'Import successful!';
+                  setTimeout(() => {
+                    this.showToast = false;
+                  }, 2000);
+                }
+              } catch (error) {
+                alert('Invalid file format');
+              }
+            };
+            reader.readAsText(file);
+          });
+          input.click();
+        },
+
         mounted() {
           console.log(`I'm mounted!`);
           this.loadPromptsFromLocal();
-        }
+          this.hasMounted = true;
+        },
       }
     }
 
@@ -230,15 +281,12 @@
       </div>
 
       <!-- Store in local -->
-      <div class="row">
+      <!-- not needed after testing I think -->
+      <!-- <div class="row">
         <button type="button" @click="savePromptsToLocal">Save to Local</button>
         <button type="button" @click="loadPromptsFromLocal">Load from Local</button>
         <button type="button" @click="deletePromptsFromLocal">Delete Local</button>
-      </div>
-
-      <div class="row">
-        <hr />
-      </div>
+      </div> -->
 
       <!-- Completed Prompts display -->
       <div class="row">
@@ -255,7 +303,7 @@
       <div class="row">
         <button type="button" @click="exportAll">Export</button>
         <button type="button" @click="importAll">Import</button>
-        <button type="button" @click="resetAll">Reset</button>
+        <button type="button" class="button-secondary" @click="deletePromptsFromLocal">Reset</button>
       </div>
 
     </div>
