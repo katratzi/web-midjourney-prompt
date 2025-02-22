@@ -27,6 +27,16 @@
     }
 }
 
+/* Links
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+a.secondary {
+    color: red;
+}
+
+a.secondart:hover {
+    color: #333;
+}
+
 /* No Border Text Field */
 .input-no-border {
     border: none !important;

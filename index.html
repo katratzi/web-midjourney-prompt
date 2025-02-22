@@ -79,18 +79,20 @@
           });
         },
         submitPrompts() {
-          const completedPrompt = this.prompts.map(prompt => {
-            const label = `<i>${prompt.label}</i>`;
-            const text = prompt.visible ? prompt.text : `<span style="color: red;">${prompt.text}</span>`;
-            return `${label}: ${text}`;
-          }).join(' ');
-          this.completedPrompts.push(completedPrompt + " - <a href='#'>load</a> del");
+          // Save the raw prompt data
+          const promptData = {
+            prompts: [...this.prompts],
+            timestamp: new Date().toISOString()
+          };
+          this.completedPrompts.push(promptData);
+
           this.showToast = true;
           this.toastMessage = 'Saved';
           setTimeout(() => {
             this.showToast = false;
           }, 2000);
         },
+
         savePrompts() {
           localStorage.setItem('prompts', JSON.stringify(this.prompts));
           alert('Prompts saved to local storage!');
@@ -106,6 +108,32 @@
             this.prompts = JSON.parse(savedPrompts);
           }
         },
+        loadSavedPrompt(index) {
+          this.prompts = [...this.completedPrompts[index].prompts];
+          this.showToast = true;
+          this.toastMessage = 'Prompt loaded';
+          setTimeout(() => {
+            this.showToast = false;
+          }, 2000);
+        },
+
+        deleteSavedPrompt(index) {
+          this.completedPrompts.splice(index, 1);
+          this.showToast = true;
+          this.toastMessage = 'Prompt deleted';
+          setTimeout(() => {
+            this.showToast = false;
+          }, 2000);
+        },
+
+        formatPromptDisplay(promptData) {
+          return promptData.prompts.map(prompt => {
+            const label = `<i>${prompt.label}</i>`;
+            const text = prompt.visible ? prompt.text : `<span style="color: grey;">${prompt.text}</span>`;
+            return `${label}: ${text}`;
+          }).join(' ');
+        },
+
         mounted() {
           console.log(`I'm mounted!`);
           this.loadPrompts();
@@ -170,13 +198,14 @@
         </div>
       </div>
 
+      <!-- Prompt controls - add -->
       <div class="row">
         <button type="button" @click="addPrompt">Add Prompt</button>
-        <!-- <hr /> -->
       </div>
       <div class="row">
         <hr />
       </div>
+      <!-- Seconday controls - for save and load -->
       <div class="row">
         <button type="button" @click="savePrompts">Save Prompt</button>
         <button type="button" @click="savePrompts">Export</button>
@@ -199,9 +228,19 @@
       <div class="row">
         <h3>Saved Prompts</h3>
         <ul>
-          <li v-for="(completedPrompt, index) in completedPrompts" :key="index" v-html="completedPrompt"></li>
+          <li v-for="(savedPrompt, index) in completedPrompts" :key="index">
+            <span v-html="formatPromptDisplay(savedPrompt)"></span>
+            <a href="#" @click.prevent="loadSavedPrompt(index)" style="margin-left: 10px">load</a>
+            <a href="#" class="secondary" @click.prevent="deleteSavedPrompt(index)" style="margin-left: 10px">del</a>
+          </li>
         </ul>
       </div>
+      <!-- <div class="row">
+        <h3>Saved Prompts</h3>
+        <ul>
+          <li v-for="(completedPrompt, index) in completedPrompts" :key="index" v-html="completedPrompt"></li>
+        </ul>
+      </div> -->
 
     </div>
 
