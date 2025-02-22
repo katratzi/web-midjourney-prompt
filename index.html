@@ -41,7 +41,7 @@
       return {
         prompts: [{ label: 'Prompt 1', text: '', visible: true }],
         completedPrompts: [],
-        showToast: true,
+        showToast: false,
         toastMessage: 'Hello World!',
         addPrompt() {
           this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '', visible: true });
@@ -84,7 +84,12 @@
             const text = prompt.visible ? prompt.text : `<span style="color: red;">${prompt.text}</span>`;
             return `${label}: ${text}`;
           }).join(' ');
-          this.completedPrompts.push(completedPrompt);
+          this.completedPrompts.push(completedPrompt + " - <a href='#'>load</a> del");
+          this.showToast = true;
+          this.toastMessage = 'Saved';
+          setTimeout(() => {
+            this.showToast = false;
+          }, 2000);
         },
         savePrompts() {
           localStorage.setItem('prompts', JSON.stringify(this.prompts));
@@ -125,27 +130,20 @@
       <div class="toast" :class="{ 'toast-hide': !showToast }">
         {{ toastMessage }}
       </div>
+      <!-- Main Prompt -->
       <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
         <h4>Midjourney Prompt</h4>
         <div class="columns twelve">
           <p>{{ concatenatedPrompts }}</p>
-
         </div>
+        <!-- controls for main prompt -->
         <div class="columns twelve">
           <button class="button-primary" @click="copyToClipboard">Copy to Clipboard</button>
-          <button type="button" @click="savePrompts">Save Prompts</button>
         </div>
-        <div class="columns two">
-          <button type="button" @click="deletePrompts">Delete Prompts</button>
-        </div>
-        <div class="columns two">
-          <button type="button" @click="loadPrompts">Load Prompts</button>
-        </div>
-
       </div>
 
       <div class="row">
-        <hr />
+        <!-- <hr /> -->
       </div>
 
       <!-- The prompts -->
@@ -176,10 +174,18 @@
         <button type="button" @click="addPrompt">Add Prompt</button>
         <!-- <hr /> -->
       </div>
+      <div class="row">
+        <hr />
+      </div>
+      <div class="row">
+        <button type="button" @click="savePrompts">Save Prompt</button>
+        <button type="button" @click="savePrompts">Export</button>
+        <button type="button" @click="savePrompts">Import</button>
+        <button type="button" class="button-secondary" @click="resetPrompts">Reset</button>
+      </div>
 
       <!-- Add and store -->
       <div class="row">
-        <button type="button" @click="addPrompt">Add Prompt</button>
         <input class="button-primary" type="submit" value="Submit" @click="submitPrompts">
         <button type="button" @click="savePrompts">Save Prompts</button>
         <button type="button" @click="deletePrompts">Delete Prompts</button>
@@ -191,7 +197,7 @@
       </div>
 
       <div class="row">
-        <h3>Completed Prompts</h3>
+        <h3>Saved Prompts</h3>
         <ul>
           <li v-for="(completedPrompt, index) in completedPrompts" :key="index" v-html="completedPrompt"></li>
         </ul>
