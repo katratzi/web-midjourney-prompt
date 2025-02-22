@@ -3,71 +3,43 @@
 
 <head>
 
-  <!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
   <title>Midjourney Prompt Tool</title>
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!-- Font -->
   <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 
-  <!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!-- CSS -->
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
   <link rel="stylesheet" href="css/custom.css">
-  <style>
-    .prompt {
-      transition: transform 0.3s ease-in-out;
-    }
-  </style>
 
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="images/favicon.png">
-  <!-- <script src="https://unpkg.com/petite-vue" defer init></script> -->
+
+  <!-- Petite Vue -->
   <script type="module">
-    import { createApp } from 'https://unpkg.com/petite-vue?module'
+    // dev version
+    // import { createApp } from 'https://unpkg.com/petite-vue?module'
+    // prod version
+    import { createApp } from 'https://unpkg.com/petite-vue@0.2.2/dist/petite-vue.es.js'
 
 
     function PromptCreator() {
       return {
-        prompts: [{ label: 'Prompt 1', text: '', visible: true }],
+        subPrompts: [{ label: 'Prompt 1', text: '', visible: true }],
         completedPrompts: [],
         showToast: false,
         toastMessage: 'Hello World!',
-        addPrompt() {
-          this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '', visible: true });
-        },
-        removePrompt(index) {
-          this.prompts.splice(index, 1);
-        },
-        movePromptUp(index) {
-          if (index > 0) {
-            const temp = this.prompts[index];
-            this.prompts[index] = this.prompts[index - 1];
-            this.prompts[index - 1] = temp;
-          }
-        },
-        movePromptDown(index) {
-          if (index < this.prompts.length - 1) {
-            const temp = this.prompts[index];
-            this.prompts[index] = this.prompts[index + 1];
-            this.prompts[index + 1] = temp;
-          }
-        },
-        toggleVisible(index) {
-          this.prompts[index].visible = !this.prompts[index].visible;
-        },
+
+        // main prompt functions
         get concatenatedPrompts() {
-          return this.prompts.filter(prompt => prompt.visible).map(prompt => prompt.text).join(' ');
+          return this.subPrompts.filter(prompt => prompt.visible).map(prompt => prompt.text).join(' ');
         },
         copyToClipboard() {
           navigator.clipboard.writeText(this.concatenatedPrompts).then(() => {
@@ -75,13 +47,13 @@
             this.toastMessage = 'Copied to clipboard!';
             setTimeout(() => {
               this.showToast = false;
-            }, 3000);
+            }, 2000);
           });
         },
-        submitPrompts() {
+        savePrompt() {
           // Save the raw prompt data
           const promptData = {
-            prompts: [...this.prompts],
+            prompts: [...this.subPrompts],
             timestamp: new Date().toISOString()
           };
           this.completedPrompts.push(promptData);
@@ -93,23 +65,52 @@
           }, 2000);
         },
 
-        savePrompts() {
-          localStorage.setItem('prompts', JSON.stringify(this.prompts));
-          alert('Prompts saved to local storage!');
+        // sub prompt functions
+        addSubPrompt() {
+          this.subPrompts.push({ label: `Prompt ${this.subPrompts.length + 1}`, text: '', visible: true });
         },
-        deletePrompts() {
-          localStorage.removeItem('prompts');
-          this.prompts = [{ label: 'Prompt 1', text: '', visible: true }];
-          alert('Prompts deleted from local storage!');
+        removeSubPrompt(index) {
+          this.subPrompts.splice(index, 1);
         },
-        loadPrompts() {
-          const savedPrompts = localStorage.getItem('prompts');
-          if (savedPrompts) {
-            this.prompts = JSON.parse(savedPrompts);
+        moveSubPromptUp(index) {
+          if (index > 0) {
+            const temp = this.subPrompts[index];
+            this.subPrompts[index] = this.subPrompts[index - 1];
+            this.subPrompts[index - 1] = temp;
           }
         },
+        moveSubPromptDown(index) {
+          if (index < this.subPrompts.length - 1) {
+            const temp = this.subPrompts[index];
+            this.subPrompts[index] = this.subPrompts[index + 1];
+            this.subPrompts[index + 1] = temp;
+          }
+        },
+        toggleVisible(index) {
+          this.subPrompts[index].visible = !this.subPrompts[index].visible;
+        },
+
+
+        // save and load to local storage
+        savePromptsToLocal() {
+          localStorage.setItem('prompts', JSON.stringify(this.subPrompts));
+          alert('Prompts saved to local storage!');
+        },
+        deletePromptsFromLocal() {
+          localStorage.removeItem('prompts');
+          this.subPrompts = [{ label: 'Prompt 1', text: '', visible: true }];
+          alert('Prompts deleted from local storage!');
+        },
+        loadPromptsFromLocal() {
+          const savedPrompts = localStorage.getItem('prompts');
+          if (savedPrompts) {
+            this.subPrompts = JSON.parse(savedPrompts);
+          }
+        },
+
+        // save and load into completed prompts
         loadSavedPrompt(index) {
-          this.prompts = [...this.completedPrompts[index].prompts];
+          this.subPrompts = [...this.completedPrompts[index].prompts];
           this.showToast = true;
           this.toastMessage = 'Prompt loaded';
           setTimeout(() => {
@@ -130,19 +131,18 @@
           return promptData.prompts.map(prompt => {
             const label = `<i>${prompt.label}</i>`;
             const text = prompt.visible ? prompt.text : `<span style="color: grey;">${prompt.text}</span>`;
-            return `${label}: ${text}`;
+            return `${label}  ${text}`;
           }).join(' ');
         },
 
         mounted() {
           console.log(`I'm mounted!`);
-          this.loadPrompts();
+          // this.loadPromptsFromLocal();
         }
       }
     }
 
     createApp({
-      Counter,
       PromptCreator
     }).mount()
   </script>
@@ -158,6 +158,7 @@
       <div class="toast" :class="{ 'toast-hide': !showToast }">
         {{ toastMessage }}
       </div>
+
       <!-- Main Prompt -->
       <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
         <h4>Midjourney Prompt</h4>
@@ -167,15 +168,13 @@
         <!-- controls for main prompt -->
         <div class="columns twelve">
           <button class="button-primary" @click="copyToClipboard">Copy to Clipboard</button>
+          <button type="button" @click="savePrompt">Save Prompt</button>
         </div>
       </div>
 
-      <div class="row">
-        <!-- <hr /> -->
-      </div>
 
-      <!-- The prompts -->
-      <div class="row prompt" v-for="(prompt, index) in prompts" :key="index">
+      <!-- The sub prompts -->
+      <div class="row prompt" v-for="(prompt, index) in subPrompts" :key="index">
         <div class="columns two">
           <input class="u-full-width input-no-border" type="text" :id="'label' + index" v-model="prompt.label"
             placeholder="Label">
@@ -184,49 +183,41 @@
           <input class="u-full-width" type="text" :id="'prompt' + index" v-model="prompt.text"
             placeholder="Enter prompt">
         </div>
-        <!-- prompt controls -->
+        <!-- sub prompt buttons -->
         <div class="columns three">
           <button type="button" class="narrow" @click="toggleVisible(index)">
             {{ prompt.visible ? 'O' : 'Ø' }}
           </button>
-          <button type="button" class="narrow" @click="movePromptUp(index)">&#x25B2; </button>
-          <button type="button" class="narrow" @click="movePromptDown(index)">&#x25BC;</button>
-          <button type="button" class="narrow button-secondary" @click="removePrompt(index)">
+          <button type="button" class="narrow" @click="moveSubPromptUp(index)">&#x25B2; </button>
+          <button type="button" class="narrow" @click="moveSubPromptDown(index)">&#x25BC;</button>
+          <button type="button" class="narrow button-secondary" @click="removeSubPrompt(index)">
             Del
           </button>
-
         </div>
       </div>
 
-      <!-- Prompt controls - add -->
+      <!-- Sub prompt controls - add -->
       <div class="row">
-        <button type="button" @click="addPrompt">Add Prompt</button>
+        <button type="button" @click="addSubPrompt">Add Sub Prompt</button>
       </div>
       <div class="row">
         <hr />
       </div>
-      <!-- Seconday controls - for save and load -->
-      <div class="row">
-        <button type="button" @click="savePrompts">Save Prompt</button>
-        <button type="button" @click="savePrompts">Export</button>
-        <button type="button" @click="savePrompts">Import</button>
-        <button type="button" class="button-secondary" @click="resetPrompts">Reset</button>
-      </div>
 
-      <!-- Add and store -->
+      <!-- Store in local -->
       <div class="row">
-        <input class="button-primary" type="submit" value="Submit" @click="submitPrompts">
-        <button type="button" @click="savePrompts">Save Prompts</button>
-        <button type="button" @click="deletePrompts">Delete Prompts</button>
-        <button type="button" @click="loadPrompts">Load Prompts</button>
+        <button type="button" @click="savePromptsToLocal">Save to Local</button>
+        <button type="button" @click="loadPromptsFromLocal">Load from Local</button>
+        <button type="button" @click="deletePromptsFromLocal">Delete Local</button>
       </div>
 
       <div class="row">
         <hr />
       </div>
 
+      <!-- Completed Prompts display -->
       <div class="row">
-        <h3>Saved Prompts</h3>
+        <h4>Saved Prompts</h4>
         <ul>
           <li v-for="(savedPrompt, index) in completedPrompts" :key="index">
             <span v-html="formatPromptDisplay(savedPrompt)"></span>
@@ -235,16 +226,14 @@
           </li>
         </ul>
       </div>
-      <!-- <div class="row">
-        <h3>Saved Prompts</h3>
-        <ul>
-          <li v-for="(completedPrompt, index) in completedPrompts" :key="index" v-html="completedPrompt"></li>
-        </ul>
-      </div> -->
+      <!-- Add and store -->
+      <div class="row">
+        <button type="button" @click="exportAll">Export</button>
+        <button type="button" @click="importAll">Import</button>
+        <button type="button" @click="resetAll">Reset</button>
+      </div>
 
     </div>
-
-
   </div>
 
 </body>

@@ -30,11 +30,11 @@
 /* Links
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 a.secondary {
-    color: red;
+    color: #D9534F;
 }
 
-a.secondart:hover {
-    color: #333;
+a.secondary:hover {
+    color: #C9302C;
 }
 
 /* No Border Text Field */
