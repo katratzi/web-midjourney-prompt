@@ -1,5 +1,25 @@
-/* No Border Text Field
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    /* right: 20px;
+    bottom: 20px; */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.toast-hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* No Border Text Field */
 .input-no-border {
     border: none !important;
     box-shadow: none !important

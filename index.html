@@ -41,6 +41,7 @@
       return {
         prompts: [{ label: 'Prompt 1', text: '', visible: true }],
         completedPrompts: [],
+        showToast: false,
         addPrompt() {
           this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '', visible: true });
         },
@@ -69,9 +70,17 @@
         },
         copyToClipboard() {
           navigator.clipboard.writeText(this.concatenatedPrompts).then(() => {
-            alert('Copied to clipboard!');
+            this.showToast = true;
+            setTimeout(() => {
+              this.showToast = false;
+            }, 2000);
           });
         },
+        // copyToClipboard() {
+        //   navigator.clipboard.writeText(this.concatenatedPrompts).then(() => {
+        //     alert('Copied to clipboard!');
+        //   });
+        // },
         submitPrompts() {
           const completedPrompt = this.prompts.map(prompt => {
             const label = `<i>${prompt.label}</i>`;
@@ -113,9 +122,12 @@
 
   <!-- Primary Page Layout -->
   <div class="container" style="margin-top: 5%">
-
     <!-- Petite Vue -->
     <div v-scope="PromptCreator()">
+      <!-- Toast notification -->
+      <div class="toast" :class="{ 'toast-hide': !showToast }">
+        Copied to clipboard!
+      </div>
       <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
         <h4>Midjourney Prompt</h4>
         <div class="columns twelve">
