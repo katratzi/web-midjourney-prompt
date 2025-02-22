@@ -25,13 +25,15 @@
   <!-- Petite Vue -->
   <script type="module">
     // dev version
-    // import { createApp } from 'https://unpkg.com/petite-vue?module'
+    import { createApp } from 'https://unpkg.com/petite-vue?module'
     // prod version
-    import { createApp } from 'https://unpkg.com/petite-vue@0.2.2/dist/petite-vue.es.js'
+    // import { createApp } from 'https://unpkg.com/petite-vue@0.2.2/dist/petite-vue.es.js'
 
 
     function PromptCreator() {
+
       return {
+
         subPrompts: [{ label: 'Prompt 1', text: '', visible: true }],
         completedPrompts: [],
         showToast: false,
@@ -137,7 +139,7 @@
 
         mounted() {
           console.log(`I'm mounted!`);
-          // this.loadPromptsFromLocal();
+          this.loadPromptsFromLocal();
         }
       }
     }
@@ -152,8 +154,9 @@
 
   <!-- Primary Page Layout -->
   <div class="container" style="margin-top: 5%">
+
     <!-- Petite Vue -->
-    <div v-scope="PromptCreator()">
+    <div v-scope="PromptCreator()" @vue:mounted="mounted">
       <!-- Toast notification -->
       <div class="toast" :class="{ 'toast-hide': !showToast }">
         {{ toastMessage }}
