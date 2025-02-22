@@ -41,7 +41,8 @@
       return {
         prompts: [{ label: 'Prompt 1', text: '', visible: true }],
         completedPrompts: [],
-        showToast: false,
+        showToast: true,
+        toastMessage: 'Hello World!',
         addPrompt() {
           this.prompts.push({ label: `Prompt ${this.prompts.length + 1}`, text: '', visible: true });
         },
@@ -71,16 +72,12 @@
         copyToClipboard() {
           navigator.clipboard.writeText(this.concatenatedPrompts).then(() => {
             this.showToast = true;
+            this.toastMessage = 'Copied to clipboard!';
             setTimeout(() => {
               this.showToast = false;
-            }, 2000);
+            }, 3000);
           });
         },
-        // copyToClipboard() {
-        //   navigator.clipboard.writeText(this.concatenatedPrompts).then(() => {
-        //     alert('Copied to clipboard!');
-        //   });
-        // },
         submitPrompts() {
           const completedPrompt = this.prompts.map(prompt => {
             const label = `<i>${prompt.label}</i>`;
@@ -126,7 +123,7 @@
     <div v-scope="PromptCreator()">
       <!-- Toast notification -->
       <div class="toast" :class="{ 'toast-hide': !showToast }">
-        Copied to clipboard!
+        {{ toastMessage }}
       </div>
       <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
         <h4>Midjourney Prompt</h4>
