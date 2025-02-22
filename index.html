@@ -36,6 +36,7 @@
   <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
 
+
     function PromptCreator() {
       return {
         prompts: [{ label: 'Prompt 1', text: '', visible: true }],
@@ -78,6 +79,25 @@
             return `${label}: ${text}`;
           }).join(' ');
           this.completedPrompts.push(completedPrompt);
+        },
+        savePrompts() {
+          localStorage.setItem('prompts', JSON.stringify(this.prompts));
+          alert('Prompts saved to local storage!');
+        },
+        deletePrompts() {
+          localStorage.removeItem('prompts');
+          this.prompts = [{ label: 'Prompt 1', text: '', visible: true }];
+          alert('Prompts deleted from local storage!');
+        },
+        loadPrompts() {
+          const savedPrompts = localStorage.getItem('prompts');
+          if (savedPrompts) {
+            this.prompts = JSON.parse(savedPrompts);
+          }
+        },
+        mounted() {
+          console.log(`I'm mounted!`);
+          this.loadPrompts();
         }
       }
     }
@@ -100,9 +120,18 @@
         <h4>Midjourney Prompt</h4>
         <div class="columns twelve">
           <p>{{ concatenatedPrompts }}</p>
-          <button class="button-primary" @click="copyToClipboard">Copy to Clipboard</button>
-        </div>
 
+        </div>
+        <div class="columns twelve">
+          <button class="button-primary" @click="copyToClipboard">Copy to Clipboard</button>
+          <button type="button" @click="savePrompts">Save Prompts</button>
+        </div>
+        <div class="columns two">
+          <button type="button" @click="deletePrompts">Delete Prompts</button>
+        </div>
+        <div class="columns two">
+          <button type="button" @click="loadPrompts">Load Prompts</button>
+        </div>
 
       </div>
 
@@ -135,17 +164,25 @@
       </div>
 
       <div class="row">
-        <hr />
+        <button type="button" @click="addPrompt">Add Prompt</button>
+        <!-- <hr /> -->
       </div>
 
       <!-- Add and store -->
       <div class="row">
         <button type="button" @click="addPrompt">Add Prompt</button>
-        <input class="button-primary" type="submit" value="Store" @click="submitPrompts">
+        <input class="button-primary" type="submit" value="Submit" @click="submitPrompts">
+        <button type="button" @click="savePrompts">Save Prompts</button>
+        <button type="button" @click="deletePrompts">Delete Prompts</button>
+        <button type="button" @click="loadPrompts">Load Prompts</button>
       </div>
 
       <div class="row">
-        <h4>Completed Prompts</h4>
+        <hr />
+      </div>
+
+      <div class="row">
+        <h3>Completed Prompts</h3>
         <ul>
           <li v-for="(completedPrompt, index) in completedPrompts" :key="index" v-html="completedPrompt"></li>
         </ul>
