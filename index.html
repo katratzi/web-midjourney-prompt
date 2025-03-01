@@ -59,7 +59,7 @@
         savePrompt() {
           // Save the raw prompt data
           const promptData = {
-            prompts: [...this.subPrompts],
+            prompts: this.subPrompts.map(prompt => ({ ...prompt })),
             timestamp: new Date().toISOString()
           };
           this.completedPrompts.push(promptData);
@@ -139,7 +139,7 @@
 
         // save and load into completed prompts
         loadSavedPrompt(index) {
-          this.subPrompts = [...this.completedPrompts[index].prompts];
+          this.subPrompts = this.completedPrompts[index].prompts.map(prompt => ({ ...prompt }));
           this.showToast = true;
           this.toastMessage = 'Prompt loaded';
           setTimeout(() => {
