@@ -159,7 +159,7 @@
         formatPromptDisplay(promptData) {
           return promptData.prompts.map(prompt => {
             const label = `<i>${prompt.label}</i>`;
-            const text = prompt.visible ? prompt.text : `<span style="color: grey;">${prompt.text}</span>`;
+            const text = prompt.visible ? prompt.text : `<span style="color: grey; text-decoration: line-through;">${prompt.text}</span>`;
             return `${label}  ${text}`;
           }).join(' ');
         },
@@ -257,7 +257,7 @@
         </div>
         <div class="columns seven">
           <input class="u-full-width" type="text" :id="'prompt' + index" v-model="prompt.text"
-            placeholder="Enter prompt">
+            :style="prompt.visible ? '' : 'text-decoration: line-through; color: grey;'" placeholder="Enter prompt">
         </div>
         <!-- sub prompt buttons -->
         <div class="columns three">
